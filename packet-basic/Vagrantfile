@@ -1,0 +1,37 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+
+  # https://www.elite.uk.com/mike/posts/AX25_over_Ethernet/
+
+  config.vm.provision "shell", inline:<<-END
+  apt-update
+  apt-get install --yes ax25-tools ax25-apps kmod
+  modprobe netrom
+  modprobe bpqether
+
+  echo """
+  auto bpq0
+  iface bpq0 inet manual
+    up bpqparms bpq0 -d broadcast
+    up axparms --setcall bpq0 MYCALL-1
+    up ip link set dev bpq0 up
+    down ip link set dev bpq0 down
+  """ > /etc/network/interfaces.d/bpq0
+
+  echo "bpq0 MYCALL-1 1000000000 255 7 BPQETHER for eth0" > /etc/ax25/axports
+
+  ifup bpq0
+  END
+
+  config.vm.define "primus" do |primus|
+    primus.vm.hostname = "primus"
+    primus.vm.provision "shell", inline:<<-END
+    END
+  end
+
+  config.vm.define "secundus" do |secundus|
+    secundus.vm.hostname = "secundus"
+    secundus.vm.provision "shell", inline:<<-END
+    END
+  end
+end
