@@ -1,5 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "debian/bullseye64"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.nfs.functional = false
 
   # https://www.elite.uk.com/mike/posts/AX25_over_Ethernet/
 
